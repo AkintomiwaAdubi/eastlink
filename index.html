@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vite App</title>
+  <script type="text/javascript">
+    var djConfig = {
+      cacheBust: "3.0.2.2.0_20010935",
+      isDebug: false,
+      parseOnLoad: true
+    };
+
+    (function () {
+      function getParameter(paramName) {
+        paramName += "=";
+        var queryString = window.location.search;
+        var strBegin = queryString.indexOf(paramName);
+        if (strBegin == -1) {
+          strBegin = queryString.length;
+        }
+        else {
+          strBegin += paramName.length;
+        }
+        var strEnd = queryString.indexOf("&", strBegin);
+
+        if (strEnd == -1) {
+          strEnd = queryString.length;
+        }
+
+        return queryString.substring(strBegin, strEnd);
+      }
+
+      var locale = getParameter("lang");
+      if (locale.length > 0) {
+        djConfig.locale = locale.toLowerCase();
+        if ((djConfig.locale.indexOf("ar") == 0) || (djConfig.locale.indexOf("he") == 0)) {
+          djConfig.direction = "rtl";
+        }
+        else {
+          djConfig.direction = "ltr";
+        }
+        var top = document.getElementsByTagName("html")[0];
+        top.dir = djConfig.direction;
+      }
+    })()
+  </script>
+
+  <script type="text/javascript"
+    src="https://webmail.eastlink.ca/iwc_static/js/dojotoolkit/dojo/dojo.js?3.0.2.2.0_20010935"></script>
+
+  <script type="text/javascript">
+    dojo.registerModulePath("iwc", "https://webmail.eastlink.ca/iwc");
+    dojo.require("iwc.i18n.resources");
+    dojo.requireLocalization("iwc.i18n", "resources");
+    iwc.l10n = dojo.i18n.getLocalization("iwc.i18n", "resources");
+    dojo.require("iwc.login");
+
+    // load new resources and change the welcome message to
+    // "Welcome to Eastlink Webmail"
+    function loadC11nResources() {
+      dojo.registerModulePath("c11n", "https://webmail.eastlink.ca/iwc_static/c11n");
+      dojo.requireLocalization("c11n.allDomain", "resources");
+      var l10n = dojo.i18n.getLocalization("c11n.allDomain", "resources");
+      dojo.mixin(iwc.l10n, l10n);
+    }
+
+    loadC11nResources();
+
+    dojo.require("iwc.login");
+
+    function reloadWithHttps() {
+      var enablessl = iwc.cookie("iwc-clientpref", "enablealwaysssl");
+      if (enablessl == "true") {
+        if (window.location.protocol == "http:") {
+          var contextPath = iwc.cookie("iwc-auth", "path");
+          var defaultURL = "";
+          if (contextPath && contextPath != "") {
+            defaultURL = "https://" + window.location.host + contextPath;
+          } else {
+            defaultURL = "https://" + window.location.host + window.location.pathname + window.location.search;
+          }
+          window.location.replace(defaultURL);
+        }
+      }
+    }
+
+    dojo.addOnLoad(function () {
+      reloadWithHttps();
+      // prevent clickjacking
+      if (top.location.hostname != self.location.hostname) {
+        try {
+          if (document.forms[0].password) {
+            document.forms[0].style.display = "none";
+          }
+        } catch (e) {
+          document.body.style.display = "none";
+        }
+      }
+
+      iwc.login.setFocus();
+      iwc.login.doI18N();
+      //document.getElementById('picCache').src='imageList.html?'+djConfig.cacheBust;
+      //var lang = langLblMapping[djConfig.locale.toLowerCase()]?langLblMapping[djConfig.locale.toLowerCase()]:langLblMapping['en-us'];
+      var lang = "en_us";
+      if (djConfig && djConfig.locale) {
+        lang = djConfig.locale.toLowerCase();
+      }
+      dijit.byId('langButton').attr("value", lang);
+      dojo.connect(dijit.byId("langButton"), "onChange", function (lang) {
+        var loginUrl = window.location;
+
+        if (window.location.search != "" && window.location.search.indexOf('lang=') > -1)
+          loginUrl = loginUrl.href.replace('lang=' + iwc.login.getParameter('lang'), 'lang=' + lang);
+        else
+          loginUrl = loginUrl + "?lang=" + lang
+
+        if (window.location.search.indexOf("u=1") == -1)
+          loginUrl = loginUrl + '&u=1';
+
+        window.location = loginUrl;
+        return false;
+      });
+    });
+
+    function login() {
+      return iwc.login.checkName();
+    }
+  </script>
+  <script type="module" crossorigin src="/assets/index-CATbr8tm.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-D2jDSa8F.css">
+</head>
+
+<body>
+  <div id="app"></div>
+</body>
+
+</html>
